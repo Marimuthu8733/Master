@@ -1,0 +1,6 @@
+@Tour_Management_.Net_8_HostAddress = http://localhost:5100
+
+GET {{Tour_Management_.Net_8_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
