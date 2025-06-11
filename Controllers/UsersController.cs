@@ -1,7 +1,9 @@
-﻿namespace WebApi.Controllers;
+namespace WebApi.Controllers;
 
 using AutoMapper;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OutputCaching;
 using WebApi.Models.Users;
 using WebApi.Services;
 
@@ -9,8 +11,8 @@ using WebApi.Services;
 [Route("[controller]")]
 public class UsersController : ControllerBase
 {
-    private IUserService _userService;
-    private IMapper _mapper;
+    private readonly IUserService _userService;
+    private readonly IMapper _mapper;
 
     public UsersController(
         IUserService userService,
@@ -21,6 +23,8 @@ public class UsersController : ControllerBase
     }
 
     [HttpGet]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [OutputCache(Duration = 60)] // Cache results for 60 seconds
     public IActionResult GetAll()
     {
         var users = _userService.GetAll();
@@ -28,13 +32,19 @@ public class UsersController : ControllerBase
     }
 
     [HttpGet("{id}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public IActionResult GetById(int id)
     {
         var user = _userService.GetById(id);
+        if (user == null)
+            return NotFound();
         return Ok(user);
     }
 
     [HttpPost]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public IActionResult Create(CreateRequest model)
     {
         _userService.Create(model);
@@ -42,6 +52,9 @@ public class UsersController : ControllerBase
     }
 
     [HttpPut("{id}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public IActionResult Update(int id, UpdateRequest model)
     {
         _userService.Update(id, model);
@@ -49,6 +62,8 @@ public class UsersController : ControllerBase
     }
 
     [HttpDelete("{id}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public IActionResult Delete(int id)
     {
         _userService.Delete(id);

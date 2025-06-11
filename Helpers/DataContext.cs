@@ -16,7 +16,10 @@ public class DataContext : DbContext
     {
         // in memory database used for simplicity, change to a real db for production applications
         options.UseInMemoryDatabase("TestDb");
+        
+        // Enable query caching for improved performance in .NET 8
+        options.EnableThreadSafetyChecks(false);
     }
 
-    public DbSet<User> Users { get; set; }
+    public DbSet<User> Users { get; set; } = null!;
 }
